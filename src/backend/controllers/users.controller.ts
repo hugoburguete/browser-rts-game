@@ -1,39 +1,25 @@
 import { Request, Response } from 'express';
-import { MongoClient } from "mongodb";
 import { User } from '../entities/user.entity';
+import UserModel from '../models/user.model';
 
 const users: User[] = [
   {
-    id: 123,
-    username: "",
-    email: "hello",
-    password: ""
+    username: "testuser",
+    email: "testuser@test.com",
+    password: "testtest"
   }
 ];
 
-export const get = (req: Request, res: Response) => {
-  const uri: string = process.env.MONGODB_CONNECTION_STRING || '';
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  client.connect(async (err) => {
-    const collection = client.db("users").collection("user");
-    await collection.find({}).toArray((err, docs) => {
-      console.log(docs);
-    })
-
-    // perform actions on the collection object
-    client.close();
-  });
-  res.send('done');
-  // res.send(users[0]);
+export const get = async (req: Request, res: Response) => {
+  const userModel = new UserModel();
+  await userModel.findByUsername(users[0].username)
+    .then(response => res.send(response))
+    .catch(err => res.send('error'));
 }
 
-export const post = (req: Request, res: Response) => {
-  const uri = "";
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  client.connect(err => {
-    const collection = client.db("test").collection("devices");
-    // perform actions on the collection object
-    client.close();
-  });
-  res.send('done');
+export const post = async (req: Request, res: Response) => {
+  const userModel = new UserModel();
+  await userModel.create(users[0])
+    .then(response => res.send(response))
+    .catch(err => res.send('error'));
 }

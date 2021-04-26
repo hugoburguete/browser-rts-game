@@ -42,6 +42,19 @@ export default class UserModel extends Model implements UserModelInterface {
       });
   }
 
+  async findById(userId: string): Promise<User> {
+    return await this.getCollection()
+      .then(async ({ client, collection }) => {
+        const findResult = await collection.findOne({ "_id": userId });
+        this.closeConnection(client);
+
+        return findResult;
+      })
+      .then((result) => {
+        return result;
+      });
+  }
+
   /**
    * Retrieves a user with a specific email
    *

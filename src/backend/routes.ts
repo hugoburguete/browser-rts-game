@@ -10,8 +10,7 @@ router.post('/api/v1/login', AuthController.login);
 
 // Logged in routes
 router.use(AuthedMiddleware.isAuthenticated)
-router.route('/api/v1/users')
-  .get(UsersController.get)
-  .post(UsersController.post)
+router.get('/api/v1/user', UsersController.get);
+router.get('/api/v1/user/:userId', UsersController.get);
 
 export default router;

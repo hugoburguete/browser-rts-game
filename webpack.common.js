@@ -1,9 +1,11 @@
 const path = require('path')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const svgToMiniDataURI = require('mini-svg-data-uri');
 
 const entry = {
-  'index': path.resolve(__dirname, 'src/frontend/index.ts'),
+  'index': './src/frontend/index.tsx',
 };
 
 module.exports = {
@@ -11,7 +13,10 @@ module.exports = {
   entry: entry,
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
-    new HtmlWebpackPlugin(),
+    new MiniCssExtractPlugin(),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, 'src/frontend/index.html')
+    }),
   ],
   output: {
     path: path.resolve(__dirname, 'src/public'),
@@ -19,23 +24,37 @@ module.exports = {
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: ['.ts', '.tsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
   },
   module: {
     rules: [
       {
-        enforce: 'pre',
-        test: /\.(ts|js)x?$/,
-        loader: 'eslint-loader',
-        exclude: /node_modules/,
-        options: {
-          fix: true,
-        },
-      },
-      {
         test: /\.(ts|js)x?$/,
         loader: 'babel-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.(css|scss)/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+            }
+          },
+          'sass-loader'
+        ],
+      },
+      {
+        test: /\.svg/,
+        type: 'asset/inline',
+        generator: {
+          dataUrl: content => {
+            content = content.toString();
+            return svgToMiniDataURI(content);
+          }
+        }
       }
     ]
   },

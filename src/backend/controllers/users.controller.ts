@@ -12,7 +12,7 @@ const users: User[] = [
 ];
 
 export const get = (req: Request, res: Response) => {
-  const uri = "mongodb+srv://root:Build1ngT@blemdb@cluster0.boua2.mongodb.net/users?retryWrites=true&w=majority";
+  const uri: string = process.env.MONGODB_CONNECTION_STRING || '';
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
   client.connect(async (err) => {
     const collection = client.db("users").collection("user");

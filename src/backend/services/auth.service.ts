@@ -1,5 +1,5 @@
 import { sign, verify } from 'jsonwebtoken';
-import { User } from '../../common/entities/user.entity';
+import { User } from '../entities/user.entity';
 
 export interface AuthenticationResponse {
   accessToken: string;

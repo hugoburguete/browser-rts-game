@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routing
 app.use('/', routes);
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('*', (req, res) => res.sendFile(path.resolve(__dirname, '../public/index.html')));
 
 // Start server
 const port = process.env.PORT || 3000;

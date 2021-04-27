@@ -69,6 +69,7 @@
     "forceConsistentCasingInFileNames": true        /* Disallow inconsistently-cased references to the same file. */
   },
   "include": [
+    "./src/frontend/",
     "./src/frontend/custom.d.ts"
   ]
 }

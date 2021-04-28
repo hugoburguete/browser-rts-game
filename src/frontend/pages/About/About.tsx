@@ -9,13 +9,13 @@ export const About = () => {
   const signOut = () => {
     auth.logout();
     history.push('/');
-  }
-  
+  };
+
   return (
-    <div>
+    <div className="container">
       <h1>About us!</h1>
       <p>{auth.user}</p>
       <button onClick={signOut}>logout</button>
     </div>
-  )
-}
+  );
+};

@@ -35,8 +35,12 @@ export function ProvideAuth({ children }: ProvideAuthPropsInterface) {
     loadUser: async () => {
       setIsUserLoading(true);
       if (getAuthTokens() !== null) {
-        const response = await makeAuthenticatedApiGetRequest('user');
-        setUser(response.username);
+        try {
+          const response = await makeAuthenticatedApiGetRequest('user');
+          setUser(response.username);
+        } catch (err) {
+          setIsUserLoading(false);
+        }
       }
       setIsUserLoading(false);
     },

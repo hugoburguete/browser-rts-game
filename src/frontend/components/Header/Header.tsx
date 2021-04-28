@@ -1,20 +1,27 @@
 import React from 'react';
-import {
-  Link
-} from "react-router-dom";
+import './Header.scss';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../ProvideAuth/ProvideAuth';
 
 export const Header = () => {
+  const auth = useAuth();
 
   return (
-    <nav>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/about">About</Link>
-        </li>
-      </ul>
+    <nav className="nav-main">
+      <div className="container">
+        <ul className="row">
+          <li className="one column">
+            <Link to="/">Home</Link>
+          </li>
+          {auth.user == '' ? (
+            ''
+          ) : (
+            <li className="one column">
+              <Link to="/about">About</Link>
+            </li>
+          )}
+        </ul>
+      </div>
     </nav>
-  )
-}
+  );
+};

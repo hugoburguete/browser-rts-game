@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import * as UsersController from './controllers/users.controller';
 import * as AuthController from './controllers/auth.controller';
 import * as AuthedMiddleware from './middleware/authed.middleware';
@@ -12,5 +12,8 @@ router.post('/api/v1/login', AuthController.login);
 // Logged in routes
 router.get('/api/v1/user', AuthedMiddleware.isAuthenticated, UsersController.get);
 router.get('/api/v1/user/:userId', AuthedMiddleware.isAuthenticated, UsersController.get);
+
+// Any other routes should 404
+router.get('/api/v1/*', (req: Request, res: Response) => res.status(404));
 
 export default router;

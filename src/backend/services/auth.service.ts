@@ -1,11 +1,6 @@
 import { sign, verify } from 'jsonwebtoken';
 import { User } from '../entities/user.entity';
-
-export interface AuthenticationResponse {
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
-}
+import { AuthenticationResponse } from "../../common/entities/auth.entity";
 
 export interface JWTSignature {
   userId: string;

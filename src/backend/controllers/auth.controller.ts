@@ -38,6 +38,10 @@ export const login = async (req: Request, res: Response) => {
   const userModel = new UserModel();
   userModel.findByEmail(req.body.email)
     .then(user => {
+      if (!user) {
+        throw new Error("Can't find user with that email");
+      }
+
       const response = generateTokenForUser(user);
       res.json(response);
 
@@ -49,5 +53,8 @@ export const login = async (req: Request, res: Response) => {
 
 
     })
-    .catch(err => res.send('error'));
+    .catch(err => {
+      console.log(err)
+      res.send('error')
+    });
 }

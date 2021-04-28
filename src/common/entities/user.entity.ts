@@ -1,7 +1,7 @@
 import { Entity } from './entity';
 
 export interface User extends Entity {
-  email: string;
+  email?: string;
   username: string;
-  password: string;
+  password?: string;
 }

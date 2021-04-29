@@ -2,10 +2,19 @@ import { Request, Response } from 'express';
 import { User } from '../entities/user.entity';
 import UserModel from '../models/user.model';
 import { generateTokenForUser } from '../services/auth.service';
+import { ErrorBag, validate } from '../services/validator.service';
 
 export const register = async (req: Request, res: Response) => {
   // Validate the request
-  // @todo
+  const errorBag = new ErrorBag([
+    validate(req.body.email, 'Email').isString().isValidEmailAddress(),
+    validate(req.body.username, 'Username').isString().isLongerThan(5).isShorterThan(24),
+    validate(req.body.password, 'Password').isString().isLongerThan(5).isShorterThan(24),
+  ]);
+
+  if (errorBag.hasErrors()) {
+    res.status(422).json(errorBag.errors);
+  }
 
   // Map the data
   const user: User = {

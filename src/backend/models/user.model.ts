@@ -3,8 +3,9 @@ import { DatabaseInsertResponse, Model } from './model';
 
 export interface UserModelInterface {
   create(user: User): Promise<DatabaseInsertResponse<User>>;
-  findByUsername(username: string): Promise<User>;
-  findByEmail(email: string): Promise<User>;
+  findById(userId: string): Promise<User | null>;
+  findByUsername(username: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
 }
 
 export default class UserModel extends Model implements UserModelInterface {
@@ -29,7 +30,7 @@ export default class UserModel extends Model implements UserModelInterface {
       });
   }
 
-  async findByUsername(username: string): Promise<User> {
+  async findByUsername(username: string): Promise<User | null> {
     return await this.getCollection()
       .then(async ({ client, collection }) => {
         const findResult = await collection.findOne({ "username": username });
@@ -42,7 +43,7 @@ export default class UserModel extends Model implements UserModelInterface {
       });
   }
 
-  async findById(userId: string): Promise<User> {
+  async findById(userId: string): Promise<User | null> {
     return await this.getCollection()
       .then(async ({ client, collection }) => {
         const findResult = await collection.findOne({ "_id": userId });
@@ -61,7 +62,7 @@ export default class UserModel extends Model implements UserModelInterface {
    * @param email 
    * @returns 
    */
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     return await this.getCollection()
       .then(async ({ client, collection }) => {
         const findResult = await collection.findOne({ "email": email });
@@ -70,6 +71,9 @@ export default class UserModel extends Model implements UserModelInterface {
         return findResult;
       })
       .then((result) => {
+        if (!result) {
+          return null;
+        }
         return result;
       })
   }

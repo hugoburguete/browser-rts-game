@@ -1,23 +1,11 @@
-import express from "express";
-import path from 'path';
-import routes from './routes';
-import dotenv from "dotenv";
+import { createServer } from './server';
 
-// Init
-dotenv.config();
-const app = express();
-
-// Express setup
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Routing
-app.use('/', routes);
-app.use(express.static(path.join(__dirname, '../public')));
-app.use('*', (req, res) => res.sendFile(path.resolve(__dirname, '../public/index.html')));
-
-// Start server
-const port = process.env.PORT || 3000;
-app.listen(port, () => { console.log(`listening on port http://localhost:${port}`) });
+createServer()
+  .then(server => {
+    // Start server
+    const port = process.env.PORT || 3000;
+    server.listen(port, () => console.log(`Listening on port http://localhost:${port}`));
+  })
+  .catch(err => {
+    console.error(err);
+  });

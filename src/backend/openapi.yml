@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: Browser RTS Game
+  description: A learning experience creating a time based game
+  version: 1.0.0
+servers:
+- url: /api/v1
+
+tags:
+  - name: authentication
+    description: Authentication related operations
+ 
+paths:
+  /register:
+    post:
+      summary: Registers a new user
+      tags: 
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+ 
+components:
+  schemas:
+    RegisterUserRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - email
+        - username
+        - password
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    AuthenticationResponse:
+      type: object
+      properties:
+        accessToken: 
+          type: string
+        refreshToken: 
+          type: string
+        expiresIn: 
+          type: integer

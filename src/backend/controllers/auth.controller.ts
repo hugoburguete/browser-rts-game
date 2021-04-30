@@ -2,20 +2,8 @@ import { Request, Response } from 'express';
 import { User } from '../entities/user.entity';
 import UserModel from '../models/user.model';
 import { generateTokenForUser } from '../services/auth.service';
-import { ErrorBag, validate } from '../services/validator.service';
 
 export const register = async (req: Request, res: Response) => {
-  // Validate the request
-  const errorBag = new ErrorBag([
-    validate(req.body.email, 'Email').isString().isValidEmailAddress(),
-    validate(req.body.username, 'Username').isString().isLongerThan(5).isShorterThan(24),
-    validate(req.body.password, 'Password').isString().isLongerThan(5).isShorterThan(24),
-  ]);
-
-  if (errorBag.hasErrors()) {
-    res.status(422).json(errorBag.errors);
-  }
-
   // Map the data
   const user: User = {
     username: req.body.username,
@@ -25,18 +13,32 @@ export const register = async (req: Request, res: Response) => {
 
   // Create a new user
   const userModel = new UserModel();
-  await userModel.create(user)
-    .then(dbResponse => {
-      const newUser = dbResponse.insertedItem;
+  try {
+    const existingUserRequest = userModel.findByEmail(req.body.username);
+    if (existingUserRequest) {
+      res.status(500).json({
+        error: {
+          type: 'request_validation',
+          message: "The user you're trying to create already exists.",
+          errors: [
+            {
+              message: "The user you're trying to create already exists."
+            }
+          ]
+        }
+      });
+    }
 
-      // Generate authentication tokens
-      const response = generateTokenForUser(newUser);
-      res.json(response);
-    })
-    .catch(err => {
-      console.log(err);
-      res.send('error')
-    });
+    const newUserRequest = await userModel.create(user);
+    const newUser = newUserRequest.insertedItem;
+
+    // Generate authentication tokens
+    const response = generateTokenForUser(newUser);
+    res.json(response);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send();
+  }
 }
 
 export const login = async (req: Request, res: Response) => {

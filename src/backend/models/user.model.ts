@@ -1,5 +1,5 @@
 import { User } from "../entities/user.entity";
-import { DatabaseInsertResponse, Model } from './model';
+import { DatabaseInsertResponse, Model, ModelInterface } from './model';
 
 export interface UserModelInterface {
   create(user: User): Promise<DatabaseInsertResponse<User>>;
@@ -9,51 +9,22 @@ export interface UserModelInterface {
 }
 
 export default class UserModel extends Model implements UserModelInterface {
-  database = 'global';
-  collection = 'users';
+  constructor() {
+    super();
+    this.setDatabase('global');
+    this.setCollection('users');
+  }
 
   async create(user: User): Promise<DatabaseInsertResponse<User>> {
-    return await this.getCollection()
-      .then(async ({ client, collection }) => {
-        const insertResult = await collection.insertOne(user);
-        this.closeConnection(client);
-
-        return insertResult;
-      })
-      .then((result) => {
-        const insertedItem = result.ops[0];
-
-        return {
-          insertedItem: <User>insertedItem,
-          operationResultCount: result.insertedCount,
-        }
-      });
+    return await this.provider.insertOne(user) as DatabaseInsertResponse<User>;
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    return await this.getCollection()
-      .then(async ({ client, collection }) => {
-        const findResult = await collection.findOne({ "username": username });
-        this.closeConnection(client);
-
-        return findResult;
-      })
-      .then((result) => {
-        return result;
-      });
+    return await this.provider.findOne({ "username": username });
   }
 
   async findById(userId: string): Promise<User | null> {
-    return await this.getCollection()
-      .then(async ({ client, collection }) => {
-        const findResult = await collection.findOne({ "_id": userId });
-        this.closeConnection(client);
-
-        return findResult;
-      })
-      .then((result) => {
-        return result;
-      });
+    return await this.provider.findOne({ "_id": userId });
   }
 
   /**
@@ -63,19 +34,7 @@ export default class UserModel extends Model implements UserModelInterface {
    * @returns 
    */
   async findByEmail(email: string): Promise<User | null> {
-    return await this.getCollection()
-      .then(async ({ client, collection }) => {
-        const findResult = await collection.findOne({ "email": email });
-        this.closeConnection(client);
-
-        return findResult;
-      })
-      .then((result) => {
-        if (!result) {
-          return null;
-        }
-        return result;
-      })
+    return await this.provider.findOne({ "email": email });
   }
 
 }

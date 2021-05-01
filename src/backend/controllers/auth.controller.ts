@@ -14,8 +14,10 @@ export const register = async (req: Request, res: Response) => {
   // Create a new user
   const userModel = new UserModel();
   try {
-    const existingUserRequest = userModel.findByEmail(req.body.username);
-    if (existingUserRequest) {
+    const existingUserRequest = await userModel.findByEmail(req.body.email);
+    const existingUserRequest2 = await userModel.findByUsername(req.body.username);
+    if (existingUserRequest || existingUserRequest2) {
+      console.log('here?', existingUserRequest2, existingUserRequest);
       res.status(500).json({
         error: {
           type: 'request_validation',
@@ -37,7 +39,17 @@ export const register = async (req: Request, res: Response) => {
     res.json(response);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send();
+    res.status(500).send({
+      error: {
+        type: 'request_failed',
+        message: "We were not able to register you at this moment. Please try again later.",
+        errors: [
+          {
+            message: "We were not able to register you at this moment. Please try again later.",
+          }
+        ]
+      }
+    });
   }
 }
 

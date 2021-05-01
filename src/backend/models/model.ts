@@ -1,8 +1,6 @@
 import { Collection, MongoClient } from 'mongodb';
-
-export interface ModelInterface { };
-
-export class DatabaseClient extends MongoClient { }
+import NeDB from "nedb";
+import { Entity } from '../../common/entities/entity';
 
 export interface DatabaseInsertResponse<T> {
   /**
@@ -16,41 +14,65 @@ export interface DatabaseInsertResponse<T> {
   operationResultCount: number;
 }
 
-export class Model {
-  private uri: string = process.env.MONGODB_CONNECTION_STRING || '';
-  protected database: string = '';
-  protected collection: string = '';
+interface DatabaseInterface {
+  database: string;
+  collection: string;
 
   /**
-   * Returns a database client.
+   * Inserts one record to the Database Collection.
    *
-   * @returns 
+   * @param entity The record to insert
    */
-  private getClient(): DatabaseClient {
-    return new MongoClient(this.uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  }
+  insertOne(entity: Entity): Promise<DatabaseInsertResponse<Entity>>;
+
+  /**
+   * Retrieves one record.
+   * @todo Make the filter parameter typed.
+   *
+   * @param filter 
+   */
+  findOne(filter: any): Promise<any>;
+}
+
+class MongoDbClient implements DatabaseInterface {
+  private uri: string = process.env.MONGODB_CONNECTION_STRING || '';
+  public database: string = '';
+  public collection: string = '';
 
   /**
    * Connects to the database client
    *
    * @returns 
    */
-  protected connectToClient(): Promise<DatabaseClient> {
-    return this.getClient().connect();
+  private connectToClient(): Promise<MongoClient> {
+    const client = new MongoClient(this.uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    return client.connect();
   }
 
-  /**
-   * Retrieves a database collection.
-   * @returns 
-   */
-  protected getCollection(): Promise<{ client: DatabaseClient, collection: Collection }> {
-    return this.connectToClient()
-      .then((client) => {
-        return {
-          client: client,
-          collection: client.db(this.database).collection(this.collection)
-        }
-      });
+  private async getCollection(client: MongoClient): Promise<Collection> {
+    return client.db(this.database).collection(this.collection);
+  }
+
+  async insertOne(entity: Entity): Promise<DatabaseInsertResponse<Entity>> {
+    const client = await this.connectToClient();
+    const collection = await this.getCollection(client);
+    const insertResult = await collection.insertOne(entity);
+    this.closeConnection(client);
+
+    const insertedItem = insertResult.ops[0];
+
+    return {
+      insertedItem: insertedItem,
+      operationResultCount: insertResult.insertedCount,
+    }
+  };
+
+  async findOne(filter: any): Promise<any> {
+    const client = await this.connectToClient();
+    const collection = await this.getCollection(client);
+    const findResult = await collection.findOne(filter);
+    this.closeConnection(client);
+    return findResult;
   }
 
   /**
@@ -58,7 +80,72 @@ export class Model {
    *
    * @returns 
    */
-  protected closeConnection(client: DatabaseClient): void {
+  private closeConnection(client: MongoClient): void {
     client.close();
+  }
+}
+
+class NeDBDatabase implements DatabaseInterface {
+  database: string = '';
+  collection: string = '';
+
+  private getClient(): NeDB {
+    const client = new NeDB({ filename: `testing-dbs/${this.database}.${this.collection}.db`, autoload: true });
+    return client;
+  }
+
+  insertOne(entity: Entity): Promise<DatabaseInsertResponse<Entity>> {
+    const client = this.getClient();
+
+    return new Promise((resolve, reject) => {
+      client.insert(entity, (err, document) => {
+        if (err) reject(err);
+
+        resolve({
+          insertedItem: document,
+          operationResultCount: 1
+        });
+      });
+    })
+  }
+
+  findOne(filter: any): Promise<any> {
+    const client = this.getClient();
+
+    return new Promise((resolve, reject) => {
+      client.findOne(filter, function (err, doc) {
+        if (err) reject(err)
+
+        return resolve(doc);
+      });
+    });
+  }
+
+}
+
+export interface ModelInterface {
+  datatabse: string;
+  collection: string;
+};
+
+export abstract class Model implements ModelInterface {
+  datatabse: string = '';
+  collection: string = '';
+  protected provider: DatabaseInterface;
+
+  constructor() {
+    if (process.env.ENV === 'testing') {
+      this.provider = new NeDBDatabase();
+    } else {
+      this.provider = new MongoDbClient();
+    }
+  }
+
+  setDatabase(database: string): void {
+    this.provider.database = database;
+  }
+
+  setCollection(collection: string): void {
+    this.provider.collection = collection;
   }
 }

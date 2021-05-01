@@ -4,7 +4,8 @@ import path from 'path';
 import routes from './routes';
 import dotenv from "dotenv";
 
-dotenv.config();
+const dotenvConfig = process.env.JEST_WORKER_ID !== undefined ? { path: path.resolve('.env.testing') } : {};
+dotenv.config(dotenvConfig);
 
 export const createServer = (): Promise<Express> => {
   // Init
@@ -17,7 +18,6 @@ export const createServer = (): Promise<Express> => {
   app.use(express.urlencoded({ extended: true }));
 
   const validatorOptions = {
-    coerceTypes: true,
     apiSpec: path.resolve('./src/backend/openapi.yml'),
     validateRequests: true,
     validateResponses: true

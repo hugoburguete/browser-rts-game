@@ -12,10 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/bcrypt": "^3.0.1",
     "@types/nedb": "^1.8.11",
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
     "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-openapi-validator": "^4.12.8",

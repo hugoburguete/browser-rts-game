@@ -4,7 +4,7 @@ import { AuthenticationResponse } from "../../common/entities/auth.entity";
 
 export interface JWTSignature {
   userId: string;
-  username: string;
+  email: string;
 }
 
 export const generateTokenForUser = (user: User) => {
@@ -13,7 +13,7 @@ export const generateTokenForUser = (user: User) => {
 
   const data: JWTSignature = {
     userId: user._id || '',
-    username: user.username,
+    email: user.email || '',
   }
 
   const expiry = 3600;

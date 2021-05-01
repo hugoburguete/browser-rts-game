@@ -14,11 +14,14 @@ describe('auth', () => {
   it('should generate tokens', async (done) => {
     request(server)
       .post(`/api/v1/register`)
-      .send({ username: 'test', email: 'test@mailbox.com', password: 'password' })
+      .send({ email: 'test@mailbox.com', password: 'password' })
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
-        if (err) return done(err)
+        if (err) {
+          console.error(err, res.body)
+          return done(err)
+        }
         expect(res.body).toHaveProperty('accessToken');
         expect(res.body).toHaveProperty('refreshToken');
         expect(res.body).toHaveProperty('expiresIn');
@@ -29,24 +32,14 @@ describe('auth', () => {
   it('should error if no email is passed in.', async (done) => {
     request(server)
       .post(`/api/v1/register`)
-      .send({ username: 'test2', password: 'password' })
+      .send({ password: 'password' })
       .expect('Content-Type', /json/)
       .expect(400)
       .end((err, res) => {
-        if (err) return done(err)
-        expect(res.body).toHaveProperty('error');
-        done();
-      });
-  });
-
-  it('should error if no username is passed in.', async (done) => {
-    request(server)
-      .post(`/api/v1/register`)
-      .send({ email: 'test2@mailbox.com', password: 'password' })
-      .expect('Content-Type', /json/)
-      .expect(400)
-      .end((err, res) => {
-        if (err) return done(err)
+        if (err) {
+          console.error(err, res.body)
+          return done(err)
+        }
         expect(res.body).toHaveProperty('error');
         done();
       });
@@ -55,13 +48,46 @@ describe('auth', () => {
   it('should error if no password is passed in.', async (done) => {
     request(server)
       .post(`/api/v1/register`)
-      .send({ email: 'test2@mailbox.com', username: 'test2' })
+      .send({ email: 'test2@mailbox.com' })
       .expect('Content-Type', /json/)
       .expect(400)
       .end((err, res) => {
-        if (err) return done(err)
+        if (err) {
+          console.error(err, res.body)
+          return done(err)
+        }
         expect(res.body).toHaveProperty('error');
         done();
+      });
+  });
+
+  it('should allow users to login after registration.', async (done) => {
+    request(server)
+      .post(`/api/v1/register`)
+      .send({ email: 'test3@mailbox.com', password: 'password' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          console.error(err, res.body)
+          return done(err)
+        }
+        expect(res.body).toHaveProperty('accessToken');
+
+        request(server)
+          .post(`/api/v1/login`)
+          .send({ email: 'test3@mailbox.com', password: 'password' })
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            if (err) {
+              console.error(err, res.body)
+              return done(err)
+            }
+
+            expect(res.body).toHaveProperty('accessToken');
+            done()
+          })
       });
   });
 });

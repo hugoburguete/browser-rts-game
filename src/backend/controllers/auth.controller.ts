@@ -1,19 +1,15 @@
 import { Request, Response } from 'express';
+import Bcrypt from "bcrypt";
 import { User } from '../entities/user.entity';
 import UserModel from '../models/user.model';
 import { generateTokenForUser } from '../services/auth.service';
 
-export const register = async (req: Request, res: Response) => {
-  // Map the data
-  const user: User = {
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-  };
+const SALT_ROUNDS = 10;
 
-  // Create a new user
+export const register = async (req: Request, res: Response) => {
   const userModel = new UserModel();
   try {
+    // Verify the user is not already stored on the database
     const existingUserRequest = await userModel.findByEmail(req.body.email);
     const existingUserRequest2 = await userModel.findByUsername(req.body.username);
     if (existingUserRequest || existingUserRequest2) {
@@ -31,6 +27,11 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
+    // Create a new user
+    const user: User = {
+      email: req.body.email,
+      password: Bcrypt.hashSync(req.body.password, SALT_ROUNDS),
+    };
     const newUserRequest = await userModel.create(user);
     const newUser = newUserRequest.insertedItem;
 
@@ -54,30 +55,29 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-  // Validate the request
-  // @todo
-
   // Check if the user exists
   const userModel = new UserModel();
-  userModel.findByEmail(req.body.email)
-    .then(user => {
-      if (!user) {
-        throw new Error("Can't find user with that email");
+  try {
+    const user = await userModel.findByEmail(req.body.email);
+
+    if (!user || !Bcrypt.compareSync(req.body.password, user.password || '')) {
+      throw new Error("The credentials you've submitted do not match our records. Please try again.");
+    }
+
+    const response = generateTokenForUser(user);
+    res.json(response);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({
+      error: {
+        type: 'request_failed',
+        message: err.message,
+        errors: [
+          {
+            message: err.message,
+          }
+        ]
       }
-
-      const response = generateTokenForUser(user);
-      res.json(response);
-
-      // Confirm the token is correct
-      // const decoded = jwt.verify(req.body.token, authSecretKey) as any;
-      // if (decoded.username !== user.username) {
-      //   throw Error('nope');
-      // }
-
-
-    })
-    .catch(err => {
-      console.log(err)
-      res.send('error')
     });
+  }
 }

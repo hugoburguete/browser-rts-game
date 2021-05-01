@@ -13,7 +13,6 @@ export const register = async (req: Request, res: Response) => {
     const existingUserRequest = await userModel.findByEmail(req.body.email);
     const existingUserRequest2 = await userModel.findByUsername(req.body.username);
     if (existingUserRequest || existingUserRequest2) {
-      console.log('here?', existingUserRequest2, existingUserRequest);
       res.status(500).json({
         error: {
           type: 'request_validation',

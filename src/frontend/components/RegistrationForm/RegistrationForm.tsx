@@ -14,7 +14,6 @@ export const RegistrationForm = () => {
     const user: User = {
       email: email,
       password: password,
-      username: username,
     };
 
     const response = await makeApiPostRequest('register', user);
@@ -25,19 +24,7 @@ export const RegistrationForm = () => {
   return (
     <form onSubmit={(e) => register(e)} method="post">
       <div className="row">
-        <div className="four columns">
-          <label htmlFor="register-username">Your username</label>
-          <input
-            className="u-full-width"
-            id="register-username"
-            placeholder="hero-123"
-            type="text"
-            name="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div className="four columns">
+        <div className="six columns">
           <label htmlFor="register-email">Your email</label>
           <input
             className="u-full-width"
@@ -49,7 +36,7 @@ export const RegistrationForm = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="four columns">
+        <div className="six columns">
           <label htmlFor="register-password">Your password</label>
           <input
             className="u-full-width"

@@ -4,9 +4,22 @@ import UserModel from '../models/user.model';
 
 export const get = async (req: Request, res: Response) => {
   const userModel = new UserModel();
-  await userModel.findByUsername(req.body.user.username)
-    .then(response => res.json(response))
-    .catch(err => res.status(404));
+  const user = await userModel.findByEmail(req.body.user.email);
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(401).json({
+      error: {
+        type: 'request_unauthorized',
+        message: "Unauthorized",
+        errors: [
+          {
+            message: "Unauthorized"
+          }
+        ]
+      }
+    });
+  }
 }
 
 export const findById = async (req: Request, res: Response) => {

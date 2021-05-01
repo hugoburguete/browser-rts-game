@@ -49,6 +49,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthenticationResponse'
+  /user:
+    get:
+      summary: Retrieves information about the authenticated user
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorResponse'
  
 components:
   schemas:
@@ -83,3 +99,20 @@ components:
           type: string
         expiresIn: 
           type: integer
+    UserResponse:
+      type: object
+      properties:
+        email: 
+          type: string
+    UnauthorizedErrorResponse:
+      type: object
+      properties:
+        error: 
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+            errors:
+              type: array

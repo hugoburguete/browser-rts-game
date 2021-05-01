@@ -90,6 +90,50 @@ describe('auth', () => {
           })
       });
   });
+
+  it('should should not allow unauthenticated users to make authenticated requests.', async (done) => {
+    request(server)
+      .get(`/api/v1/user`)
+      .expect('Content-Type', /json/)
+      .expect(401)
+      .end((err, res) => {
+        if (err) {
+          console.error(err, res.body)
+          return done(err)
+        }
+
+        expect(res.body).toHaveProperty('error');
+        done()
+      })
+  });
+
+  it('should should allow authenticated users to make authenticated requests.', async (done) => {
+    request(server)
+      .post(`/api/v1/login`)
+      .send({ email: 'test3@mailbox.com', password: 'password' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          console.error(err, res.body);
+          return done(err)
+        }
+
+        request(server)
+          .get(`/api/v1/user`)
+          .set('Authorization', `Bearer ${res.body.accessToken}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err, res) => {
+            if (err) {
+              console.error(err, res.body)
+              return done(err)
+            }
+
+            done()
+          })
+      });
+  });
 });
 
 afterAll(() => {

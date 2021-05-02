@@ -124,13 +124,11 @@ class NeDBDatabase implements DatabaseInterface {
 }
 
 export interface ModelInterface {
-  datatabse: string;
-  collection: string;
 };
 
 export abstract class Model implements ModelInterface {
-  datatabse: string = '';
-  collection: string = '';
+  protected datatabse: string = '';
+  protected collection: string = '';
   protected provider: DatabaseInterface;
 
   constructor() {
@@ -141,11 +139,11 @@ export abstract class Model implements ModelInterface {
     }
   }
 
-  setDatabase(database: string): void {
+  protected setDatabase(database: string): void {
     this.provider.database = database;
   }
 
-  setCollection(collection: string): void {
+  protected setCollection(collection: string): void {
     this.provider.collection = collection;
   }
 }

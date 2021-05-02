@@ -9,6 +9,8 @@ servers:
 tags:
   - name: authentication
     description: Authentication related operations
+  - name: village
+    description: Village related requests
  
 paths:
   /register:
@@ -59,6 +61,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorResponse'
+  /village:
+    get:
+      summary: Retrieves the least recently acquired user village
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VillageResponse'
         401:
           description: Unauthenticated
           content:
@@ -116,3 +134,73 @@ components:
               type: string
             errors:
               type: array
+    VillageResponse:
+      type: object
+      properties:
+        userId: 
+          type: string
+        last_updated:
+          type: number
+        resources:
+          type: object
+          properties:
+            wood: 
+              type: object
+              properties:
+                quantity:
+                  type: number
+            clay:
+              type: object
+              properties:
+                quantity:
+                  type: number
+            iron:
+              type: object
+              properties:
+                quantity:
+                  type: number
+        coordinates:
+          type: object
+          properties:
+            latitude: 
+              type: integer
+            longitude:
+              type: integer
+        buildings:
+          type: object
+          properties:
+            headquarters:
+              type: object
+              properties:
+                level: 
+                  type: integer
+            barracks:
+              type: object
+              properties:
+                level: 
+                  type: integer
+            stable:
+              type: object
+              properties:
+                level: 
+                  type: integer
+            smithy:
+              type: object
+              properties:
+                level: 
+                  type: integer
+            timberCamp:
+              type: object
+              properties:
+                level: 
+                  type: integer
+            clayPit:
+              type: object
+              properties:
+                level: 
+                  type: integer
+            ironMine:
+              type: object
+              properties:
+                level: 
+                  type: integer

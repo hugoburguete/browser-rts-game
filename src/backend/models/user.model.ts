@@ -1,5 +1,5 @@
 import { User } from "../entities/user.entity";
-import { DatabaseInsertResponse, Model, ModelInterface } from './model';
+import { DatabaseInsertResponse, Model } from './model';
 
 export interface UserModelInterface {
   create(user: User): Promise<DatabaseInsertResponse<User>>;

@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import * as UsersController from './controllers/users.controller';
 import * as AuthController from './controllers/auth.controller';
 import * as AuthedMiddleware from './middleware/authed.middleware';
+import * as VillageController from './controllers/village.controller';
 
 const router: Router = Router();
 
@@ -9,9 +10,14 @@ const router: Router = Router();
 router.post('/api/v1/register', AuthController.register);
 router.post('/api/v1/login', AuthController.login);
 
-// Logged in routes
+// --- Logged in routes
+
+// User
 router.get('/api/v1/user', AuthedMiddleware.isAuthenticated, UsersController.get);
 router.get('/api/v1/user/:userId', AuthedMiddleware.isAuthenticated, UsersController.get);
+
+// Village
+router.get('/api/v1/village', AuthedMiddleware.isAuthenticated, VillageController.get);
 
 // Any other routes should 404
 router.get('/api/v1/*', (req: Request, res: Response) => res.status(404));

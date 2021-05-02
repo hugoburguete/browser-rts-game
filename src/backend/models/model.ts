@@ -14,6 +14,18 @@ export interface DatabaseInsertResponse<T> {
   operationResultCount: number;
 }
 
+export interface DatabaseUpdateResponse {
+  /**
+   * The amount of rows found. This will always return 0 when using NeDB.
+   */
+  matchedCount: number;
+
+  /**
+   * The amount of records updated
+   */
+  updatedCount: number;
+}
+
 interface DatabaseInterface {
   database: string;
   collection: string;
@@ -32,6 +44,14 @@ interface DatabaseInterface {
    * @param filter 
    */
   findOne(filter: any): Promise<any>;
+
+  /**
+   * Updates one record
+   *
+   * @param filter 
+   * @param update 
+   */
+  updateOne(filter: any, update: any): Promise<DatabaseUpdateResponse>;
 }
 
 class MongoDbClient implements DatabaseInterface {
@@ -73,6 +93,18 @@ class MongoDbClient implements DatabaseInterface {
     const findResult = await collection.findOne(filter);
     this.closeConnection(client);
     return findResult;
+  }
+
+  async updateOne(filter: any, update: any): Promise<DatabaseUpdateResponse> {
+    const client = await this.connectToClient();
+    const collection = await this.getCollection(client);
+    const updateResult = await collection.updateOne(filter, { $set: update });
+    this.closeConnection(client);
+
+    return {
+      matchedCount: updateResult.matchedCount,
+      updatedCount: updateResult.modifiedCount,
+    };
   }
 
   /**
@@ -121,6 +153,26 @@ class NeDBDatabase implements DatabaseInterface {
     });
   }
 
+  updateOne(filter: any, update: any): Promise<DatabaseUpdateResponse> {
+    const client = this.getClient();
+
+    return new Promise((resolve, reject) => {
+      client.update(
+        filter,
+        {
+          $set: update
+        },
+        {},
+        function (err, numReplaced) {
+          if (err) reject(err)
+
+          return resolve({
+            updatedCount: numReplaced,
+            matchedCount: 0
+          });
+        });
+    });
+  }
 }
 
 export interface ModelInterface {

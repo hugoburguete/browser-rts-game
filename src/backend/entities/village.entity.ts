@@ -15,6 +15,8 @@ export interface SimpleVillage extends Entity {
  * Village
  */
 export interface Village extends Entity {
+  _id?: string,
+
   /**
    * The user this village belongs to
    */

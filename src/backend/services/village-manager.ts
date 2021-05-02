@@ -5,12 +5,23 @@ import { ResourceBuilding } from '../../common/entities/building.entity';
 export const updateVillage = (village: Village) => {
   const timeInMillis = (new Date()).getTime();
 
-  village.resources.wood.quantity = village.resources.wood.quantity + getResourcesEarnedForTimePeriod(village.buildings.timberCamp, timeInMillis - village.last_updated);
-  village.resources.clay.quantity = village.resources.clay.quantity + getResourcesEarnedForTimePeriod(village.buildings.clayPit, timeInMillis - village.last_updated);
-  village.resources.iron.quantity = village.resources.iron.quantity + getResourcesEarnedForTimePeriod(village.buildings.ironMine, timeInMillis - village.last_updated);
+  const villageUpdates = {
+    last_updated: timeInMillis,
+    resources: {
+      wood: { quantity: village.resources.wood.quantity },
+      clay: { quantity: village.resources.clay.quantity },
+      iron: { quantity: village.resources.iron.quantity },
+    }
+  };
+  villageUpdates.resources.wood.quantity = village.resources.wood.quantity + getResourcesEarnedForTimePeriod(village.buildings.timberCamp, timeInMillis - village.last_updated);
+  villageUpdates.resources.clay.quantity = village.resources.clay.quantity + getResourcesEarnedForTimePeriod(village.buildings.clayPit, timeInMillis - village.last_updated);
+  villageUpdates.resources.iron.quantity = village.resources.iron.quantity + getResourcesEarnedForTimePeriod(village.buildings.ironMine, timeInMillis - village.last_updated);
 
-  village.last_updated = timeInMillis;
-  return village;
+  const merged = { ...village, ...villageUpdates };
+  return {
+    updatedVillage: merged,
+    updates: villageUpdates
+  };
 }
 
 /**

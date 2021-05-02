@@ -12,17 +12,22 @@ export const get = async (req: Request, res: Response) => {
       throw new Error("No village found");
     }
 
-    village = updateVillage(village);
-    village = serializeVillage(village);
+    let {
+      updatedVillage,
+      updates
+    } = updateVillage(village);
+
+    await villageModel.updateById(village._id || '', updates);
+    village = serializeVillage(updatedVillage);
 
     res.json(village);
   } catch (err) {
     console.error(err);
-    // res.status(500).json({
-    //   error: {
-    //     type: '',
-    //     message: err.message,
-    //   }
-    // })
+    res.status(500).json({
+      error: {
+        type: '',
+        message: err.message,
+      }
+    })
   }
 }

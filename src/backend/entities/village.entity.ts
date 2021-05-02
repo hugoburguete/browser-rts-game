@@ -1,4 +1,4 @@
-import { Smithy, Headquarters, Barracks, Stable, TimberCamp, ClayPit, IronMine } from "../../common/entities/building.entity";
+import { Smithy, Headquarters, Barracks, Stable, TimberCamp, ClayPit, IronMine, Warehouse } from "../../common/entities/building.entity";
 import { CoordinateInterface, Coordinate } from "../../common/entities/Coordinate";
 import { Entity } from '../../common/entities/entity';
 import { Resource } from '../../common/entities/resource.entity';
@@ -46,10 +46,11 @@ export interface Village extends Entity {
    * The buildings of the village
    */
   buildings: {
-    headquarters: Headquarters;
-    barracks: Barracks;
-    stable: Stable;
-    smithy: Smithy;
+    headquarters: Headquarters,
+    barracks: Barracks,
+    stable: Stable,
+    smithy: Smithy,
+    warehouse: Warehouse,
     timberCamp: TimberCamp,
     clayPit: ClayPit,
     ironMine: IronMine
@@ -92,6 +93,9 @@ export const createVillage = (userId: string): Village => {
       },
       smithy: {
         level: 1,
+      },
+      warehouse: {
+        level: 1
       },
       timberCamp: {
         level: 1,

@@ -14,6 +14,8 @@ export interface Smithy extends Building { }
 
 export interface Stable extends Building { }
 
+export interface Warehouse extends Building { }
+
 export interface TimberCamp extends ResourceBuilding { }
 
 export interface ClayPit extends ResourceBuilding { }

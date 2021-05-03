@@ -3,10 +3,38 @@ import { RefreshToken, User } from "../entities/user.entity";
 import { DatabaseInsertResponse, DatabaseUpdateResponse, Model } from './model';
 
 export interface RefreshTokenModelInterface {
+  /**
+   * Creates a database record of a refresh token.
+   *
+   * @param token 
+   */
   create(token: RefreshToken): Promise<DatabaseInsertResponse<RefreshToken>>;
+
+  /**
+   * Creates or updates a refresh token database record.
+   * @param token 
+   */
   createOrUpdate(token: RefreshToken): Promise<DatabaseInsertResponse<RefreshToken> | DatabaseUpdateResponse>;
+
+  /**
+   * Retrieves a token record
+   *
+   * @param token 
+   */
   findByToken(token: string): Promise<RefreshToken | null>;
+
+  /**
+   * Retrieves a token record by user Id
+   *
+   * @param userId 
+   */
   findByUserId(userId: string): Promise<RefreshToken | null>;
+
+  /**
+   * Updates a token record.
+   *
+   * @param token 
+   */
   update(token: RefreshToken): Promise<DatabaseUpdateResponse>;
 }
 

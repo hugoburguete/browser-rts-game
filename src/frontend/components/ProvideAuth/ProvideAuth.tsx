@@ -21,11 +21,9 @@ export function useAuth() {
   return useContext(authContext);
 }
 
-interface ProvideAuthPropsInterface {
-  children: ReactNode;
-}
-
-export function ProvideAuth({ children }: ProvideAuthPropsInterface) {
+export function ProvideAuth({
+  children,
+}: React.PropsWithChildren<React.ReactNode>) {
   const [user, setUser] = useState('');
   const [isUserLoading, setIsUserLoading] = useState(true);
 

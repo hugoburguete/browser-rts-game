@@ -11,6 +11,7 @@ export const updateVillage = (village: Village) => {
       wood: { quantity: village.resources.wood.quantity },
       clay: { quantity: village.resources.clay.quantity },
       iron: { quantity: village.resources.iron.quantity },
+      population: { quantity: village.resources.population.quantity },
     }
   };
 

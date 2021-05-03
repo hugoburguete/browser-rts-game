@@ -18,9 +18,9 @@ export const get = async (req: Request, res: Response) => {
     } = updateVillage(village);
 
     await villageModel.updateById(village._id || '', updates);
-    village = serializeVillage(updatedVillage);
+    const villageResponse = serializeVillage(updatedVillage);
 
-    res.json(village);
+    res.json(villageResponse);
   } catch (err) {
     console.error(err);
     res.status(500).json({

@@ -1,4 +1,4 @@
-import { generateTokenForUser, isValidToken } from "./auth.service";
+import { generateTokenForUser, isValidAccessToken } from "./auth.service";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -14,7 +14,7 @@ describe('auth', () => {
 
   it('should verify tokens validated are correct', () => {
     const tokens = generateTokenForUser({ email: "test@mailbox.com", _id: "test" });
-    const decoded = isValidToken(tokens.accessToken);
+    const decoded = isValidAccessToken(tokens.accessToken);
 
     expect(decoded.userId).toBe('test');
     expect(decoded.email).toBe('test@mailbox.com');

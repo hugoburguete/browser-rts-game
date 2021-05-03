@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import UserModel from '../models/user.model';
-import { isValidToken } from '../services/auth.service';
+import { isValidAccessToken } from '../services/auth.service';
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   const authToken = (req.headers.authorization ? req.headers.authorization.replace('Bearer ', '') : '')
@@ -12,7 +12,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
       throw new Error('Unauthorized')
     }
 
-    const decodedToken = isValidToken(authToken);
+    const decodedToken = isValidAccessToken(authToken);
     const userModel = new UserModel();
 
     const user = await userModel.findByEmail(decodedToken.email)

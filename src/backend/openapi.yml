@@ -51,6 +51,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthenticationResponse'
+  /reauthenticate:
+    post:
+      summary: Use this endpoint to refresh your access token with the provided refresh token.
+      tags: 
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
   /user:
     get:
       summary: Retrieves information about the authenticated user
@@ -107,6 +126,14 @@ components:
         email:
           type: string
         password:
+          type: string
+    RefreshTokenRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
           type: string
     AuthenticationResponse:
       type: object

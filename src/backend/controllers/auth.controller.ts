@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import Bcrypt from "bcrypt";
-import { User } from '../entities/user.entity';
+import { RefreshToken, User } from '../entities/user.entity';
 import UserModel from '../models/user.model';
-import { generateTokenForUser } from '../services/auth.service';
+import { generateTokenForUser, verifyRefreshToken } from '../services/auth.service';
 import { VillageModel } from '../models/village.model';
 import { createVillage } from '../entities/village.entity';
+import RefreshTokenModel from '../models/refreshtoken.model';
 
 const SALT_ROUNDS = 10;
 
@@ -65,9 +66,10 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-  // Check if the user exists
   const userModel = new UserModel();
+  const refreshTokenModel = new RefreshTokenModel();
   try {
+    // Check if the user exists
     const user = await userModel.findByEmail(req.body.email);
 
     if (!user || !Bcrypt.compareSync(req.body.password, user.password || '')) {
@@ -75,6 +77,64 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const response = generateTokenForUser(user);
+
+    // Store refresh token
+    let refreshTokenExpiry = new Date();
+    refreshTokenExpiry.setSeconds(refreshTokenExpiry.getSeconds() + 7200)
+    const refreshToken: RefreshToken = {
+      created: new Date(),
+      createdByIp: req.ip,
+      expires: refreshTokenExpiry,
+      token: response.refreshToken,
+      userId: user._id || '',
+      replacedByToken: undefined,
+      revoked: undefined,
+      revokedByIp: undefined,
+    };
+    refreshTokenModel.createOrUpdate(refreshToken);
+
+    res.json(response);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({
+      error: {
+        type: 'request_failed',
+        message: err.message,
+        errors: [
+          {
+            message: err.message,
+          }
+        ]
+      }
+    });
+  }
+}
+
+export const refreshToken = async (req: Request, res: Response) => {
+  const token = req.body.refreshToken;
+  const refreshTokenModel = new RefreshTokenModel();
+  const userModel = new UserModel();
+
+  try {
+    // Find the token and user of the token
+    const decoded = verifyRefreshToken(token);
+    const refreshToken: RefreshToken = await refreshTokenModel.findByToken(token);
+    const user = await userModel.findById(decoded.userId);
+    console.log(decoded, user);
+
+    if (user == null) {
+      throw new Error("Invalid token");
+    }
+
+    // Generate new token
+    const response = generateTokenForUser(user);
+
+    // Store the token record
+    refreshToken.revoked = new Date();
+    refreshToken.revokedByIp = req.ip;
+    refreshToken.replacedByToken = response.refreshToken;
+    await refreshTokenModel.update(refreshToken);
+
     res.json(response);
   } catch (err) {
     console.error(err.message);

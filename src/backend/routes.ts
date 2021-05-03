@@ -9,6 +9,7 @@ const router: Router = Router();
 // Authentication routes
 router.post('/api/v1/register', AuthController.register);
 router.post('/api/v1/login', AuthController.login);
+router.post('/api/v1/reauthenticate', AuthController.refreshToken);
 
 // --- Logged in routes
 

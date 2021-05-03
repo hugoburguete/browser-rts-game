@@ -34,9 +34,22 @@ export const generateTokenForUser = (user: User) => {
  * @param user 
  * @returns 
  */
-export const isValidToken = (accessToken: string): JWTSignature => {
+export const isValidAccessToken = (accessToken: string): JWTSignature => {
   const authSecretKey = process.env.AUTH_SECRET_KEY || '';
   const decoded = verify(accessToken, authSecretKey) as JWTSignature;
+
+  return decoded;
+}
+
+/**
+ * 
+ * @param accessToken 
+ * @param user 
+ * @returns 
+ */
+export const verifyRefreshToken = (refreshToken: string): JWTSignature => {
+  const refreshSecretKey = process.env.REFRESH_SECRET_KEY || '';
+  const decoded = verify(refreshToken, refreshSecretKey) as JWTSignature;
 
   return decoded;
 }

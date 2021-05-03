@@ -6,6 +6,8 @@ export const get = async (req: Request, res: Response) => {
   const userModel = new UserModel();
   const user = await userModel.findByEmail(req.body.user.email);
   if (user) {
+    // @todo We shouldn't be sending the whole user through. Create a user profile collection to differentiate it from
+    // an authentication user entity
     res.status(200).json(user);
   } else {
     res.status(401).json({

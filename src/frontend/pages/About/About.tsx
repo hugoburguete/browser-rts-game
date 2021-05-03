@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router';
+import { Page } from '../../components/Page/Page';
 import { useAuth } from '../../components/ProvideAuth/ProvideAuth';
 
 export const About = () => {
@@ -12,10 +13,12 @@ export const About = () => {
   };
 
   return (
-    <div className="container">
-      <h1>About us!</h1>
-      <p>{auth.user}</p>
-      <button onClick={signOut}>logout</button>
-    </div>
+    <Page>
+      <div className="container">
+        <h1>About us!</h1>
+        <p>{auth.user}</p>
+        <button onClick={signOut}>logout</button>
+      </div>
+    </Page>
   );
 };

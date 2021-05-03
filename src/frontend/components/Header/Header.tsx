@@ -17,7 +17,7 @@ export const Header = () => {
             ''
           ) : (
             <li className="one column">
-              <Link to="/about">About</Link>
+              <Link to="/overview">Go to game</Link>
             </li>
           )}
         </ul>

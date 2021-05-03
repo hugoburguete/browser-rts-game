@@ -176,15 +176,21 @@ components:
               properties:
                 quantity:
                   type: number
+                maximum:
+                  type: number
             clay:
               type: object
               properties:
                 quantity:
                   type: number
+                maximum:
+                  type: number
             iron:
               type: object
               properties:
                 quantity:
+                  type: number
+                maximum:
                   type: number
         coordinates:
           type: object

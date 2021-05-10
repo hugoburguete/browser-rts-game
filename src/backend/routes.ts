@@ -19,6 +19,7 @@ router.get('/api/v1/user/:userId', AuthedMiddleware.isAuthenticated, UsersContro
 
 // Village
 router.get('/api/v1/village', AuthedMiddleware.isAuthenticated, VillageController.get);
+router.post('/api/v1/village/:villageId/building', AuthedMiddleware.isAuthenticated, VillageController.levelBuilding);
 
 // Any other routes should 404
 router.get('/api/v1/*', (req: Request, res: Response) => res.status(404));

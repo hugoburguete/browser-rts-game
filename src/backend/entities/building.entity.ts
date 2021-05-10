@@ -1,3 +1,7 @@
+import { BuildingTask as CommonBuildingTask } from "../../common/entities/building.entity";
+
+export interface BuildingTask extends CommonBuildingTask { }
+
 export const getResouceRateForLevel = (level: number) => {
   switch (level) {
     case 1:

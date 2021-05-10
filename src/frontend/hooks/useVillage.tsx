@@ -1,14 +1,5 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useState,
-  PropsWithChildren,
-} from 'react';
-import {
-  createVillageResponse,
-  VillageResponse,
-} from '../../common/entities/village.entity';
+import React, { createContext, ReactNode, useContext, useState, PropsWithChildren } from 'react';
+import { createVillageResponse, VillageResponse } from '../../common/entities/village.entity';
 import { makeAuthenticatedApiGetRequest } from '../utils/http';
 
 interface VillageContextInterface {
@@ -42,9 +33,5 @@ export function ProvideVillage({ children }: PropsWithChildren<ReactNode>) {
     },
   };
 
-  return (
-    <VillageContext.Provider value={contextValue}>
-      {children}
-    </VillageContext.Provider>
-  );
+  return <VillageContext.Provider value={contextValue}>{children}</VillageContext.Provider>;
 }

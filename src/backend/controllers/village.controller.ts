@@ -31,3 +31,7 @@ export const get = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const levelBuilding = async (req: Request, res: Response) => {
+
+}

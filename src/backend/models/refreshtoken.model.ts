@@ -40,10 +40,10 @@ export default class RefreshTokenModel extends Model implements RefreshTokenMode
   }
 
   async findByUserId(userId: string): Promise<RefreshToken> {
-    return await this.provider.findOne({ 'userId': new ObjectId(userId) });
+    return await this.provider.findOne({ 'userId': userId });
   }
 
   async update(token: RefreshToken): Promise<DatabaseUpdateResponse> {
-    return await this.provider.updateOne({ '_id': new ObjectId(token._id) }, token) as DatabaseUpdateResponse;
+    return await this.provider.updateOne({ '_id': token._id }, token) as DatabaseUpdateResponse;
   }
 }

@@ -1,5 +1,6 @@
 import { Collection, MongoClient } from 'mongodb';
 import NeDB from "nedb";
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { Entity } from '../../common/entities/entity';
 
 export interface DatabaseInsertResponse<T> {
@@ -117,12 +118,21 @@ class MongoDbClient implements DatabaseInterface {
   }
 }
 
+/**
+ * Store database instances in memory (only used when running tests)
+ */
+const clients: { [key: string]: NeDB } = {};
+
 class NeDBDatabase implements DatabaseInterface {
   database: string = '';
   collection: string = '';
 
   private getClient(): NeDB {
-    const client = new NeDB({ filename: `testing-dbs/${this.database}.${this.collection}.db`, autoload: true });
+    let client: NeDB = clients[`${this.database}.${this.collection}`];
+    if (!client) {
+      client = new NeDB({ filename: `testing-dbs/${this.database}.${this.collection}.db`, autoload: true, inMemoryOnly: true });
+      clients[`${this.database}.${this.collection}`] = client;
+    }
     return client;
   }
 

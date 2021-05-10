@@ -12,6 +12,7 @@ const SALT_ROUNDS = 10;
 export const register = async (req: Request, res: Response) => {
   const userModel = new UserModel();
   const villageModel = new VillageModel('1');
+  const refreshTokenModel = new RefreshTokenModel();
 
   try {
     // Verify the user is not already stored on the database
@@ -48,6 +49,22 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate authentication tokens
     const response = generateTokenForUser(newUser);
+
+    // Store refresh token
+    let refreshTokenExpiry = new Date();
+    refreshTokenExpiry.setSeconds(refreshTokenExpiry.getSeconds() + 7200)
+    const refreshToken: RefreshToken = {
+      created: new Date(),
+      createdByIp: req.ip,
+      expires: refreshTokenExpiry,
+      token: response.refreshToken,
+      userId: user._id || '',
+      replacedByToken: undefined,
+      revoked: undefined,
+      revokedByIp: undefined,
+    };
+    refreshTokenModel.createOrUpdate(refreshToken);
+
     res.json(response);
   } catch (err) {
     console.error(err.message);

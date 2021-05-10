@@ -91,7 +91,7 @@ describe('auth', () => {
       });
   });
 
-  it('should should not allow unauthenticated users to make authenticated requests.', async (done) => {
+  it('should not allow unauthenticated users to make authenticated requests.', async (done) => {
     request(server)
       .get(`/api/v1/user`)
       .expect('Content-Type', /json/)
@@ -107,7 +107,7 @@ describe('auth', () => {
       })
   });
 
-  it('should should allow authenticated users to make authenticated requests.', async (done) => {
+  it('should allow authenticated users to make authenticated requests.', async (done) => {
     request(server)
       .post(`/api/v1/login`)
       .send({ email: 'test3@mailbox.com', password: 'password' })
@@ -135,8 +135,3 @@ describe('auth', () => {
       });
   });
 });
-
-afterAll(() => {
-  const dir = 'testing-dbs';
-  fs.rmdirSync(dir, { recursive: true });
-})

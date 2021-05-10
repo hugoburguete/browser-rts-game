@@ -11,8 +11,6 @@ export const createServer = (): Promise<Express> => {
   // Init
   const app = express();
 
-  // Express setup
-
   // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

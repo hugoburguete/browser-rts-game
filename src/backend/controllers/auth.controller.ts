@@ -6,6 +6,8 @@ import { generateTokenForUser, verifyRefreshToken } from '../services/auth.servi
 import { VillageModel } from '../models/village.model';
 import { createVillage } from '../entities/village.entity';
 import RefreshTokenModel from '../models/refreshtoken.model';
+import { HTTPError } from "./exceptions/HTTPError";
+import { handleError } from "./helpers/errorHandler";
 
 const SALT_ROUNDS = 10;
 
@@ -67,18 +69,7 @@ export const register = async (req: Request, res: Response) => {
 
     res.json(response);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send({
-      error: {
-        type: 'request_failed',
-        message: "We were not able to register you at this moment. Please try again later.",
-        errors: [
-          {
-            message: err.message,
-          }
-        ]
-      }
-    });
+    handleError(err, res);
   }
 }
 
@@ -90,7 +81,16 @@ export const login = async (req: Request, res: Response) => {
     const user = await userModel.findByEmail(req.body.email);
 
     if (!user || !Bcrypt.compareSync(req.body.password, user.password || '')) {
-      throw new Error("The credentials you've submitted do not match our records. Please try again.");
+      throw new HTTPError({
+        status: 401,
+        error: {
+          message: "The credentials you've submitted do not match our records. Please try again.",
+          type: "authentication_failed",
+          errors: [
+            { message: "The credentials you've submitted do not match our records. Please try again." }
+          ]
+        }
+      })
     }
 
     const response = generateTokenForUser(user);
@@ -112,18 +112,7 @@ export const login = async (req: Request, res: Response) => {
 
     res.json(response);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send({
-      error: {
-        type: 'request_failed',
-        message: err.message,
-        errors: [
-          {
-            message: err.message,
-          }
-        ]
-      }
-    });
+    handleError(err, res);
   }
 }
 
@@ -140,7 +129,18 @@ export const refreshToken = async (req: Request, res: Response) => {
     console.log(decoded, user);
 
     if (user == null) {
-      throw new Error("Invalid token");
+      throw new HTTPError({
+        status: 401,
+        error: {
+          message: "Invalid token",
+          type: "authentication_failed",
+          errors: [
+            {
+              message: "Invalid token"
+            }
+          ]
+        }
+      });
     }
 
     // Generate new token
@@ -154,17 +154,6 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     res.json(response);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send({
-      error: {
-        type: 'request_failed',
-        message: err.message,
-        errors: [
-          {
-            message: err.message,
-          }
-        ]
-      }
-    });
+    handleError(err, res);
   }
 }

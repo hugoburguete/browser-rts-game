@@ -4,8 +4,7 @@ import HTTPError from '../exceptions/HTTPError';
 export const handleError = (err: Error, res: Response) => {
   console.log(err);
   if (err instanceof HTTPError) {
-    console.log(err.response.status, err.response.error);
-    res.send(err.response.status).send(err.response.error);
+    res.status(err.response.status).send(err.response.error);
   } else {
     res.status(500).send({
       error: {

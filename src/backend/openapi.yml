@@ -32,6 +32,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthenticationResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedErrorResponse'
   /login:
     post:
       summary: Authenticates a user
@@ -51,6 +53,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthenticationResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedErrorResponse'
   /reauthenticate:
     post:
       summary: Use this endpoint to refresh your access token with the provided refresh token.
@@ -70,6 +74,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthenticationResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedErrorResponse'
   /user:
     get:
       summary: Retrieves information about the authenticated user
@@ -81,11 +87,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         401:
-          description: Unauthenticated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedErrorResponse'
+          $ref: '#/components/responses/UnauthorizedErrorResponse'
   /village:
     get:
       summary: Retrieves the least recently acquired user village
@@ -97,13 +99,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/VillageResponse'
         401:
-          description: Unauthenticated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedErrorResponse'
- 
+          $ref: '#/components/responses/UnauthorizedErrorResponse'
 components:
+  responses:
+    UnauthorizedErrorResponse:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedErrorResponse'
   schemas:
     RegisterUserRequest:
       type: object
